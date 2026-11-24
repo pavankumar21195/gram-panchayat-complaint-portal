@@ -1,0 +1,193 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Track Complaint - Gram Panchayat</title>
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background: #eaf5ec;
+    margin: 0;
+    padding: 20px;
+}
+
+.container {
+    max-width: 430px;
+    margin: 40px auto;
+    padding: 25px;
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 4px 15px #0002;
+}
+
+.header {
+    background: #075c2c;
+    color: white;
+    text-align: center;
+    padding: 18px;
+    border-radius: 10px;
+}
+
+h3 {
+    text-align: center;
+    color: #075c2c;
+    margin-top: 25px;
+}
+
+label {
+    display: block;
+    margin-top: 20px;
+    font-weight: bold;
+}
+
+input {
+    width: 100%;
+    padding: 13px;
+    margin-top: 8px;
+    border: 1px solid #ccc;
+    border-radius: 7px;
+    font-size: 15px;
+}
+
+button {
+    width: 100%;
+    padding: 14px;
+    margin-top: 20px;
+    background: #08783b;
+    color: white;
+    border: none;
+    border-radius: 7px;
+    font-size: 16px;
+}
+
+#result {
+    margin-top: 20px;
+    padding: 15px;
+    background: #eaf5ec;
+    border-radius: 8px;
+    display: none;
+    line-height: 1.8;
+}
+
+.status {
+    color: #08783b;
+    font-weight: bold;
+}
+
+a {
+    display: block;
+    text-align: center;
+    margin-top: 20px;
+    color: #08783b;
+    text-decoration: none;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<div class="header">
+    <h2>Gram Panchayat</h2>
+    <p>Digital Complaint Portal</p>
+</div>
+
+<h3>Track Your Complaint</h3>
+
+<p>Enter your complaint reference number below.</p>
+
+<form id="trackForm">
+
+<label>Complaint Reference Number</label>
+
+<input type="text" id="complaintID"
+placeholder="Example: GP12345678" required>
+
+<button type="submit">
+Track Complaint
+</button>
+
+</form>
+
+<div id="result"></div>
+
+<a href="index.html">Back to Home</a>
+
+</div>
+
+<script>
+
+document.getElementById("trackForm")
+.addEventListener("submit", function(event) {
+
+    event.preventDefault();
+
+    const enteredID =
+    document.getElementById("complaintID")
+    .value.trim().toUpperCase();
+
+    const complaints = JSON.parse(
+localStorage.getItem("complaints") || "[]"
+);
+
+console.log("Saved complaints:", complaints);
+
+alert(
+    "IDs found: " +
+    complaints.map(c => c.id).join(", ")
+);
+  const complaint = complaints.find(item =>
+    String(item.id).trim().toUpperCase() === enteredID
+);  
+
+    const result = document.getElementById("result");
+
+    result.style.display = "block";
+
+    if(complaint) {
+
+        result.innerHTML = `
+        <h3>Complaint Details</h3>
+        <b>Reference ID:</b> ${complaint.id}<br>
+        <b>Category:</b> ${complaint.category}<br>
+        <b>Village:</b> ${complaint.village}<br>
+        <b>Location:</b> ${complaint.location}<br>
+        <b>Status:</b>
+<span class="status">${complaint.status || "Pending"}</span>
+<br><br>
+
+<b>Notification:</b>
+<p>
+${
+    complaint.status === "Resolved"
+    ? "Your complaint has been resolved successfully."
+    : complaint.status === "In Progress"
+    ? "Your complaint is currently being processed."
+    : "Your complaint has been received and is waiting for action."
+}
+</p>
+        `;
+
+    } else {
+
+        result.innerHTML =
+        "Complaint not found. Please check your reference number.";
+
+    }
+
+});
+
+</script>
+
+</div>
+</body>
+</html>

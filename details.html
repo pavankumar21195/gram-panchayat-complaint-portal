@@ -1,0 +1,269 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Complaint Details - Gram Panchayat</title>
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background: #eaf5ec;
+    margin: 0;
+    padding: 15px;
+}
+
+.container {
+    max-width: 700px;
+    margin: auto;
+}
+
+header {
+    background: #176b38;
+    color: white;
+    text-align: center;
+    padding: 25px 10px;
+    border-radius: 10px;
+}
+
+.section {
+    background: white;
+    padding: 20px;
+    margin-top: 20px;
+    border-radius: 10px;
+    box-shadow: 0 2px 6px #ccc;
+}
+
+input {
+    width: 100%;
+    padding: 13px;
+    margin: 10px 0;
+    border: 1px solid #aaa;
+    border-radius: 6px;
+    font-size: 16px;
+}
+
+button {
+    background: #176b38;
+    color: white;
+    border: none;
+    padding: 13px;
+    border-radius: 6px;
+    width: 100%;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+button:hover {
+    background: #10532b;
+}
+
+.detail {
+    border-bottom: 1px solid #ddd;
+    padding: 12px 0;
+    overflow-wrap: anywhere;
+}
+
+.detail strong {
+    color: #176b38;
+}
+
+#result {
+    display: none;
+    margin-top: 20px;
+}
+
+.status {
+    background: #e0f3e5;
+    padding: 10px;
+    border-radius: 6px;
+    color: #176b38;
+    font-weight: bold;
+    display: inline-block;
+}
+
+#error {
+    color: red;
+    margin-top: 12px;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<header>
+    <h1>Gram Panchayat</h1>
+    <h2>Complaint Details</h2>
+    <p>Complaint Management System</p>
+</header>
+
+<div class="section">
+
+    <h2>Search Complaint</h2>
+
+    <input
+        type="text"
+        id="complaintID"
+        placeholder="Enter Complaint ID"
+    >
+
+    <button onclick="searchComplaint()">
+        View Complaint
+    </button>
+
+    <p id="error"></p>
+
+</div>
+
+<div class="section" id="result">
+
+    <h2>Complaint Information</h2>
+
+    <div class="detail">
+        <strong>Complaint ID:</strong>
+        <span id="id"></span>
+    </div>
+     <div class="detail">
+    <strong>Submitted Date:</strong>
+    <span id="date"></span>
+     </div>
+    <div class="detail">
+        <strong>Name:</strong>
+        <span id="name"></span>
+    </div>
+
+    <div class="detail">
+        <strong>Mobile Number:</strong>
+        <span id="mobile"></span>
+    </div>
+
+    <div class="detail">
+        <strong>Village:</strong>
+        <span id="village"></span>
+    </div>
+
+    <div class="detail">
+        <strong>Category:</strong>
+        <span id="category"></span>
+    </div>
+
+    <div class="detail">
+        <strong>Location:</strong>
+        <span id="location"></span>
+    </div>
+
+    <div class="detail">
+        <strong>Description:</strong>
+        <p id="description"></p>
+    </div>
+
+    <div class="detail">
+        <strong>Current Status:</strong>
+        <p class="status" id="status"></p>
+    </div>
+
+    <div id="photoSection" class="detail" style="display:none">
+        <strong>Complaint Photo:</strong>
+        <br>
+        <img id="photo" alt="Complaint photo"
+             style="max-width:100%; margin-top:10px; border-radius:8px;">
+    </div>
+
+</div>
+
+</div>
+
+<script>
+
+function searchComplaint() {
+
+    let enteredID = document
+        .getElementById("complaintID")
+        .value.trim().toUpperCase();
+
+    let complaints = JSON.parse(
+        localStorage.getItem("complaints") || "[]"
+    );
+
+    let complaint = complaints.find(c =>
+        String(c.id).toUpperCase() === enteredID
+    );
+
+    let result = document.getElementById("result");
+    let error = document.getElementById("error");
+
+    result.style.display = "none";
+    error.innerText = "";
+
+    if (enteredID === "") {
+        error.innerText = "Please enter a complaint ID.";
+        return;
+    }
+
+    if (!complaint) {
+        error.innerText = "Complaint not found!";
+        return;
+    }
+
+    document.getElementById("id").textContent =
+        complaint.id || "";
+    document.getElementById("date").textContent =
+    complaint.date || "Date not available";
+    document.getElementById("name").textContent =
+        complaint.name || "";
+
+    document.getElementById("mobile").textContent =
+        complaint.mobile || "";
+
+    document.getElementById("village").textContent =
+        complaint.village || "";
+
+    document.getElementById("category").textContent =
+        complaint.category || "";
+
+    document.getElementById("location").textContent =
+        complaint.location || "";
+
+    document.getElementById("description").textContent =
+        complaint.description || "No description available.";
+
+    document.getElementById("status").textContent =
+        complaint.status || "Pending";
+
+    let photoSection =
+        document.getElementById("photoSection");
+
+    let photo = document.getElementById("photo");
+
+    if (complaint.photo) {
+        photo.src = complaint.photo;
+        photoSection.style.display = "block";
+    } else {
+        photo.removeAttribute("src");
+        photoSection.style.display = "none";
+    }
+
+    result.style.display = "block";
+}
+  const params = new URLSearchParams(window.location.search);
+
+const complaintID = params.get("id");
+
+if (complaintID) {
+    document.getElementById("complaintID").value = complaintID;
+    searchComplaint();
+}
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,358 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Submit Complaint - Gram Panchayat</title>
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background: #eaf5ec;
+    margin: 0;
+    padding: 15px;
+}
+
+.container {
+    max-width: 480px;
+    margin: 20px auto;
+    padding: 22px;
+    background: white;
+    border-radius: 14px;
+    box-shadow: 0 4px 15px #0002;
+}
+
+.header {
+    background: #075c2c;
+    color: white;
+    text-align: center;
+    padding: 18px;
+    border-radius: 10px;
+}
+
+h3 {
+    text-align: center;
+    color: #075c2c;
+}
+
+label {
+    display: block;
+    margin-top: 16px;
+    font-weight: bold;
+    color: #17472b;
+}
+
+input, select, textarea {
+    width: 100%;
+    padding: 12px;
+    margin-top: 7px;
+    border: 1px solid #ccc;
+    border-radius: 7px;
+    font-size: 15px;
+}
+
+textarea {
+    height: 100px;
+    resize: vertical;
+}
+
+button {
+    width: 100%;
+    padding: 14px;
+    margin-top: 20px;
+    background: #08783b;
+    color: white;
+    border: none;
+    border-radius: 7px;
+    font-size: 16px;
+}
+
+.language {
+    background: white;
+    color: #075c2c;
+    border: 1px solid #08783b;
+}
+
+#message {
+    text-align: center;
+    font-weight: bold;
+    color: #08783b;
+    margin-top: 15px;
+}
+
+#photoPreview {
+    max-width: 100%;
+    max-height: 200px;
+    margin-top: 12px;
+    display: none;
+    border-radius: 8px;
+}
+
+a {
+    display: block;
+    text-align: center;
+    margin-top: 18px;
+    color: #08783b;
+    text-decoration: none;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<div class="header">
+    <h2 id="title">Gram Panchayat</h2>
+    <p>Digital Complaint Portal</p>
+</div>
+
+<button type="button" class="language"
+onclick="changeLanguage()">
+ಕನ್ನಡ / English
+</button>
+
+<h3 id="heading">Submit Your Complaint</h3>
+
+<form id="complaintForm">
+
+<label id="nameLabel">Full Name</label>
+<input type="text" id="name"
+placeholder="Enter your name" required>
+
+<label id="mobileLabel">Mobile Number</label>
+<input type="tel" id="mobile"
+placeholder="10 digit mobile number"
+pattern="[0-9]{10}" maxlength="10" required>
+
+<label id="villageLabel">Village Name</label>
+<input type="text" id="village"
+placeholder="Enter village name" required>
+
+<label id="categoryLabel">Complaint Category</label>
+
+<select id="category" required>
+    <option value="">Select Category</option>
+    <option value="Garbage Collection">
+        Garbage Collection
+    </option>
+    <option value="Blocked Drainage">
+        Blocked Drainage
+    </option>
+    <option value="Public Cleanliness">
+        Public Cleanliness
+    </option>
+    <option value="Other Sanitation Issue">
+        Other Sanitation Issue
+    </option>
+</select>
+
+<label id="locationLabel">Complaint Location</label>
+<input type="text" id="location"
+placeholder="Enter street or area name" required>
+
+<label id="descriptionLabel">Complaint Description</label>
+<textarea id="description"
+placeholder="Explain your complaint here"
+required></textarea>
+
+<label id="photoLabel">Upload Complaint Photo</label>
+<input type="file" id="photo"
+accept="image/*">
+
+<img id="photoPreview" alt="Selected complaint photo">
+
+<button type="submit" id="submitButton">
+Submit Complaint
+</button>
+
+</form>
+
+<p id="message"></p>
+
+<a href="index.html" id="homeLink">
+Back to Home
+</a>
+
+</div>
+
+<script>
+
+let language = "en";
+
+function changeLanguage() {
+
+    language = language === "en" ? "kn" : "en";
+
+    const labels = {
+        en: [
+            "Gram Panchayat",
+            "Submit Your Complaint",
+            "Full Name",
+            "Enter your name",
+            "Mobile Number",
+            "10 digit mobile number",
+            "Village Name",
+            "Enter village name",
+            "Complaint Category",
+            "Select Category",
+            "Complaint Location",
+            "Enter street or area name",
+            "Complaint Description",
+            "Explain your complaint here",
+            "Upload Complaint Photo",
+            "Submit Complaint",
+            "Back to Home"
+        ],
+
+        kn: [
+            "ಗ್ರಾಮ ಪಂಚಾಯಿತಿ",
+            "ನಿಮ್ಮ ದೂರನ್ನು ಸಲ್ಲಿಸಿ",
+            "ಪೂರ್ಣ ಹೆಸರು",
+            "ನಿಮ್ಮ ಹೆಸರನ್ನು ನಮೂದಿಸಿ",
+            "ಮೊಬೈಲ್ ಸಂಖ್ಯೆ",
+            "10 ಅಂಕಿಯ ಮೊಬೈಲ್ ಸಂಖ್ಯೆ",
+            "ಗ್ರಾಮದ ಹೆಸರು",
+            "ಗ್ರಾಮದ ಹೆಸರನ್ನು ನಮೂದಿಸಿ",
+            "ದೂರಿನ ವರ್ಗ",
+            "ವರ್ಗವನ್ನು ಆಯ್ಕೆಮಾಡಿ",
+            "ದೂರಿನ ಸ್ಥಳ",
+            "ರಸ್ತೆ ಅಥವಾ ಪ್ರದೇಶದ ಹೆಸರು",
+            "ದೂರಿನ ವಿವರಣೆ",
+            "ನಿಮ್ಮ ದೂರನ್ನು ವಿವರಿಸಿ",
+            "ದೂರಿನ ಫೋಟೋ ಅಪ್‌ಲೋಡ್ ಮಾಡಿ",
+            "ದೂರು ಸಲ್ಲಿಸಿ",
+            "ಮುಖಪುಟಕ್ಕೆ ಹಿಂತಿರುಗಿ"
+        ]
+    };
+
+    let t = labels[language];
+
+    const ids = [
+        "title", "heading", "nameLabel", "mobileLabel",
+        "villageLabel", "categoryLabel", "locationLabel",
+        "descriptionLabel", "photoLabel", "submitButton",
+        "homeLink"
+    ];
+
+    const placeholders = [
+        "name", "mobile", "village",
+        "location", "description"
+    ];
+
+    const placeholderValues = [
+        3, 5, 7, 11, 13
+    ];
+
+    ids.forEach((id, i) => {
+        document.getElementById(id).innerText = t[i];
+    });
+
+    placeholders.forEach((id, i) => {
+        document.getElementById(id).placeholder =
+        t[placeholderValues[i]];
+    });
+
+    const category = document.getElementById("category");
+
+    if(language === "kn") {
+        category.innerHTML = `
+        <option value="">ವರ್ಗವನ್ನು ಆಯ್ಕೆಮಾಡಿ</option>
+        <option value="Garbage Collection">ಕಸ ಸಂಗ್ರಹಣೆ</option>
+        <option value="Blocked Drainage">ಮುಚ್ಚಿದ ಚರಂಡಿ</option>
+        <option value="Public Cleanliness">ಸಾರ್ವಜನಿಕ ಸ್ವಚ್ಛತೆ</option>
+        <option value="Other Sanitation Issue">ಇತರ ನೈರ್ಮಲ್ಯ ಸಮಸ್ಯೆ</option>`;
+    } else {
+        category.innerHTML = `
+        <option value="">Select Category</option>
+        <option value="Garbage Collection">Garbage Collection</option>
+        <option value="Blocked Drainage">Blocked Drainage</option>
+        <option value="Public Cleanliness">Public Cleanliness</option>
+        <option value="Other Sanitation Issue">Other Sanitation Issue</option>`;
+    }
+}
+
+document.getElementById("photo")
+.addEventListener("change", function() {
+
+    const file = this.files[0];
+    const preview = document.getElementById("photoPreview");
+
+    if(file && file.type.startsWith("image/")) {
+
+        if(file.size > 5 * 1024 * 1024) {
+            alert("Please select an image smaller than 5 MB.");
+            this.value = "";
+            preview.style.display = "none";
+            return;
+        }
+
+        const reader = new FileReader();
+
+        reader.onload = function(event) {
+            preview.src = event.target.result;
+            preview.style.display = "block";
+        };
+
+        reader.readAsDataURL(file);
+
+    } else {
+        preview.style.display = "none";
+    }
+});
+
+
+document.getElementById("complaintForm")
+.addEventListener("submit", function(event) {
+
+    event.preventDefault();
+
+    const complaintID =
+    "GP" + Date.now().toString().slice(-8);
+
+    const complaint = {
+        id: complaintID,
+        date: new Date().toLocaleString(),
+        name: document.getElementById("name").value,
+        mobile: document.getElementById("mobile").value,
+        village: document.getElementById("village").value,
+        category: document.getElementById("category").value,
+        location: document.getElementById("location").value,
+        description: document.getElementById("description").value,
+photo: document.getElementById("photoPreview").src || "",
+status: "Pending"
+    };
+
+    let complaints = JSON.parse(
+        localStorage.getItem("complaints") || "[]"
+    );
+
+    complaints.push(complaint);
+
+    localStorage.setItem(
+        "complaints",
+        JSON.stringify(complaints)
+    );
+
+    document.getElementById("message").innerText =
+        language === "en"
+        ? "Complaint submitted successfully! Your ID: " + complaintID
+        : "ದೂರು ಯಶಸ್ವಿಯಾಗಿ ಸಲ್ಲಿಸಲಾಗಿದೆ! ನಿಮ್ಮ ಸಂಖ್ಯೆ: " + complaintID;
+
+    this.reset();
+
+    document.getElementById("photoPreview").style.display = "none";
+
+});
+
+
+</script>
+
+</body>
+</html>
