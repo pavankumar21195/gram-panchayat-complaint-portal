@@ -1,0 +1,85 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Citizen Login</title>
+
+<style>
+body {
+    font-family: Arial, sans-serif;
+    background: #eaf5ec;
+    padding: 20px;
+}
+.container {
+    max-width: 400px;
+    margin: 40px auto;
+    background: white;
+    padding: 25px;
+    border-radius: 12px;
+}
+h2 {
+    text-align: center;
+    color: #075c2c;
+}
+input, button {
+    width: 100%;
+    padding: 12px;
+    margin: 10px 0;
+    box-sizing: border-box;
+}
+button {
+    background: #08783b;
+    color: white;
+    border: none;
+    border-radius: 6px;
+}
+a {
+    color: #08783b;
+}
+</style>
+</head>
+
+<body>
+<div class="container">
+<h2>Citizen Login</h2>
+
+<form id="loginForm">
+<input type="text" id="username"
+placeholder="Enter Username" required>
+
+<input type="password" id="password"
+placeholder="Enter Password" required>
+
+<button type="submit">Login</button>
+</form>
+
+<p id="message"></p>
+
+<p>New citizen? <a href="register.html">Register here</a></p>
+<a href="index.html">Back to Home</a>
+</div>
+
+<script>
+document.getElementById("loginForm")
+.addEventListener("submit", function(event) {
+    event.preventDefault();
+
+    let users = JSON.parse(
+        localStorage.getItem("users") || "[]"
+    );
+
+    let username = document.getElementById("username").value.trim();
+    let password = document.getElementById("password").value;
+
+    let user = users.find(u =>
+        u.username === username && u.password === password
+    );
+
+    document.getElementById("message").innerText =
+        user ? "Login successful!" : "Invalid username or password.";
+});
+</script>
+</body>
+</html>
