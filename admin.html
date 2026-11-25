@@ -114,6 +114,7 @@ button {
     <h2>Admin Dashboard</h2>
     <p>Complaint Management System</p>
 </header>
+
   <div style="text-align:center; margin-top:15px;">
 
     <button onclick="changeLanguage('en')">
@@ -214,7 +215,7 @@ const SUPABASE_URL = 'https://qdxvpngrmatmhuqnjxjy.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_5fJ8AofNDxLRRgQOSiz5cQ_OkqlSgmU';
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
-
+window.supabaseClient = supabase;
 async function checkAdmin() {
     const { data: { user }, error } =
         await supabase.auth.getUser();
@@ -244,7 +245,17 @@ checkAdmin();
 </script>
 
 <script>
+async function logoutAdmin() {
+    const { error } =
+        await window.supabaseClient.auth.signOut();
 
+    if (error) {
+        alert(error.message);
+        return;
+    }
+
+    window.location.replace('login.html');
+}
 function loadComplaints() {
 
     let complaints = JSON.parse(
