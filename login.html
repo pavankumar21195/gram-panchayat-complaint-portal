@@ -1,11 +1,9 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Citizen Login</title>
-
 <style>
 body {
     font-family: Arial, sans-serif;
@@ -35,19 +33,18 @@ button {
     border: none;
     border-radius: 6px;
 }
-a {
-    color: #08783b;
-}
+a { color: #08783b; }
+#message { overflow-wrap: anywhere; }
 </style>
 </head>
-
 <body>
+
 <div class="container">
 <h2>Citizen Login</h2>
 
 <form id="loginForm">
-<input type="text" id="username"
-placeholder="Enter Username" required>
+<input type="email" id="email"
+placeholder="Enter Email" required>
 
 <input type="password" id="password"
 placeholder="Enter Password" required>
@@ -56,30 +53,66 @@ placeholder="Enter Password" required>
 </form>
 
 <p id="message"></p>
-
 <p>New citizen? <a href="register.html">Register here</a></p>
 <a href="index.html">Back to Home</a>
 </div>
 
-<script>
-document.getElementById("loginForm")
-.addEventListener("submit", function(event) {
+<script type="module">
+import { createClient } from
+'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+
+const SUPABASE_URL = 'sb_publishable_5fJ8AofNDxLRRgQOSiz5cQ_OkqlSgmU';
+const SUPABASE_KEY = 'gram_panchayat_portal';
+
+const supabase = createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
+);
+
+const form = document.getElementById('loginForm');
+const message = document.getElementById('message');
+
+form.addEventListener('submit', async function(event) {
     event.preventDefault();
 
-    let users = JSON.parse(
-        localStorage.getItem("users") || "[]"
-    );
+    message.textContent = 'Logging in...';
 
-    let username = document.getElementById("username").value.trim();
-    let password = document.getElementById("password").value;
+    const email = document.getElementById('email').value.trim();
+    const password = document.getElementById('password').value;
 
-    let user = users.find(u =>
-        u.username === username && u.password === password
-    );
+    const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password
+    });
 
-    document.getElementById("message").innerText =
-        user ? "Login successful!" : "Invalid username or password.";
+    if (error) {
+        message.textContent = error.message;
+        return;
+    }
+
+    const { data: profile, error: profileError } =
+        await supabase
+        .from('profiles')
+        .select('role')
+        .eq('id', data.user.id)
+        .single();
+
+    if (profileError || !profile) {
+        await supabase.auth.signOut();
+        message.textContent = 'User profile not found.';
+        return;
+    }
+
+    message.textContent = 'Login successful!';
+
+    if (profile.role === 'admin') {
+        window.location.href = 'admin.html';
+    } else {
+        window.location.href = 'complaint.html';
+    }
 });
 </script>
+
 </body>
 </html>
+
