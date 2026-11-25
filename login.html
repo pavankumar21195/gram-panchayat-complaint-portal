@@ -86,9 +86,12 @@ form.addEventListener('submit', async function(event) {
         password
     });
 
-    if (error) {
-    message.textContent = 'Login error: ' + error.message;
-    return;
+    if (profileError || !profile) {
+  await supabase.auth.signOut();
+  message.textContent = profileError
+    ? 'Profile error: ' + profileError.message
+    : 'User profile not found.';
+  return;
 }
 
     const { data: profile, error: profileError } =
