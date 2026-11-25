@@ -182,7 +182,7 @@ Back to Home
 
 </div>
 
-<script>
+<script type="module">
 
 let language = "en";
 
@@ -277,7 +277,7 @@ function changeLanguage() {
         <option value="Other Sanitation Issue">Other Sanitation Issue</option>`;
     }
 }
-
+window.changeLanguage = changeLanguage;
 document.getElementById("photo")
 .addEventListener("change", function() {
 
@@ -308,48 +308,72 @@ document.getElementById("photo")
 });
 
 
+import { createClient } from
+'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+
+const SUPABASE_URL = 'sb_publishable_5fJ8AofNDxLRRgQOSiz5cQ_OkqlSgmU';
+const SUPABASE_KEY = 'gram_panchayat_portal';
+
+const supabase = createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
+);
+
 document.getElementById("complaintForm")
-.addEventListener("submit", function(event) {
+.addEventListener("submit", async function(event) {
 
     event.preventDefault();
 
-    const complaintID =
-    "GP" + Date.now().toString().slice(-8);
+    const message = document.getElementById("message");
+    const button = document.getElementById("submitButton");
 
-    const complaint = {
-        id: complaintID,
-        date: new Date().toLocaleString(),
-        name: document.getElementById("name").value,
-        mobile: document.getElementById("mobile").value,
-        village: document.getElementById("village").value,
-        category: document.getElementById("category").value,
-        location: document.getElementById("location").value,
-        description: document.getElementById("description").value,
-photo: document.getElementById("photoPreview").src || "",
-status: "Pending"
-    };
+    button.disabled = true;
+    message.innerText = "Submitting complaint...";
 
-    let complaints = JSON.parse(
-        localStorage.getItem("complaints") || "[]"
-    );
+    try {
+        const { data: { user }, error: authError } =
+            await supabase.auth.getUser();
 
-    complaints.push(complaint);
+        if (authError || !user) {
+            throw new Error("Please login first.");
+        }
 
-    localStorage.setItem(
-        "complaints",
-        JSON.stringify(complaints)
-    );
+        const complaintCode =
+            "GP" + Date.now().toString().slice(-8);
 
-    document.getElementById("message").innerText =
-        language === "en"
-        ? "Complaint submitted successfully! Your ID: " + complaintID
-        : "ದೂರು ಯಶಸ್ವಿಯಾಗಿ ಸಲ್ಲಿಸಲಾಗಿದೆ! ನಿಮ್ಮ ಸಂಖ್ಯೆ: " + complaintID;
+        const complaint = {
+            user_id: user.id,
+            title: document.getElementById("category").value,
+            name: document.getElementById("name").value,
+            mobile: document.getElementById("mobile").value,
+            village: document.getElementById("village").value,
+            category: document.getElementById("category").value,
+            location: document.getElementById("location").value,
+            description: document.getElementById("description").value,
+            status: "Received"
+        };
 
-    this.reset();
+        const { data, error } = await supabase
+            .from("complaints")
+            .insert([complaint])
+            .select("id")
+            .single();
 
-    document.getElementById("photoPreview").style.display = "none";
+        if (error) throw error;
 
+        message.innerText =
+            "Complaint submitted successfully! Your ID: " + data.id;
+
+        this.reset();
+        document.getElementById("photoPreview").style.display = "none";
+
+    } catch (error) {
+        message.innerText = "Error: " + error.message;
+    }
+
+    button.disabled = false;
 });
+
 
 
 </script>
