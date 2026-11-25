@@ -76,6 +76,7 @@ form.addEventListener('submit', async function(event) {
     event.preventDefault();
 
     message.textContent = 'Logging in...';
+    console.log('Login button clicked');
 
     const email = document.getElementById('email').value.trim();
     const password = document.getElementById('password').value;
@@ -86,9 +87,9 @@ form.addEventListener('submit', async function(event) {
     });
 
     if (error) {
-        message.textContent = error.message;
-        return;
-    }
+    message.textContent = 'Login error: ' + error.message;
+    return;
+}
 
     const { data: profile, error: profileError } =
         await supabase
