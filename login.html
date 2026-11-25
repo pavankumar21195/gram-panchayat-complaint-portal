@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -43,13 +44,9 @@ a { color: #08783b; }
 <h2>Citizen Login</h2>
 
 <form id="loginForm">
-<input type="email" id="email"
-placeholder="Enter Email" required>
-
-<input type="password" id="password"
-placeholder="Enter Password" required>
-
-<button type="submit">Login</button>
+<input type="email" id="email" placeholder="Enter Email" required>
+<input type="password" id="password" placeholder="Enter Password" required>
+<button type="submit" id="loginButton">Login</button>
 </form>
 
 <p id="message"></p>
@@ -64,59 +61,59 @@ import { createClient } from
 const SUPABASE_URL = 'https://qdxvpngrmatmhuqnjxjy.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_5fJ8AofNDxLRRgQOSiz5cQ_OkqlSgmU';
 
-const supabase = createClient(
-    SUPABASE_URL,
-    SUPABASE_KEY
-);
+const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
 const form = document.getElementById('loginForm');
 const message = document.getElementById('message');
+const button = document.getElementById('loginButton');
 
 form.addEventListener('submit', async function(event) {
     event.preventDefault();
-
     message.textContent = 'Logging in...';
-    console.log('Login button clicked');
+    button.disabled = true;
 
-    const email = document.getElementById('email').value.trim();
-    const password = document.getElementById('password').value;
+    try {
+        const email = document.getElementById('email').value.trim();
+        const password = document.getElementById('password').value;
 
-    const { data, error } = await supabase.auth.signInWithPassword({
-        email,
-        password
-    });
+        const { data, error } = await supabase.auth.signInWithPassword({
+            email,
+            password
+        });
 
-    if (profileError || !profile) {
-  await supabase.auth.signOut();
-  message.textContent = profileError
-    ? 'Profile error: ' + profileError.message
-    : 'User profile not found.';
-  return;
-}
+        if (error) {
+            message.textContent = 'Login error: ' + error.message;
+            return;
+        }
 
-    const { data: profile, error: profileError } =
-        await supabase
-        .from('profiles')
-        .select('role')
-        .eq('id', data.user.id)
-        .single();
+        const { data: profile, error: profileError } = await supabase
+            .from('profiles')
+            .select('role')
+            .eq('id', data.user.id)
+            .single();
 
-    if (profileError || !profile) {
-        await supabase.auth.signOut();
-        message.textContent = 'User profile not found.';
-        return;
-    }
+        if (profileError || !profile) {
+            await supabase.auth.signOut();
+            message.textContent = profileError
+                ? 'Profile error: ' + profileError.message
+                : 'User profile not found.';
+            return;
+        }
 
-    message.textContent = 'Login successful!';
+        message.textContent = 'Login successful!';
 
-    if (profile.role === 'admin') {
-        window.location.href = 'admin.html';
-    } else {
-        window.location.href = 'complaint.html';
+        if (profile.role === 'admin') {
+            window.location.href = 'admin.html';
+        } else {
+            window.location.href = 'complaint.html';
+        }
+
+    } catch (error) {
+        message.textContent = 'Error: ' + error.message;
+    } finally {
+        button.disabled = false;
     }
 });
 </script>
-
 </body>
 </html>
-
