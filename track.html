@@ -110,7 +110,7 @@ a {
 <label>Complaint Reference Number</label>
 
 <input type="text" id="complaintID"
-placeholder="Example: GP12345678" required>
+placeholder="Enter your full complaint UUID" required>
 
 <button type="submit">
 Track Complaint
@@ -124,69 +124,72 @@ Track Complaint
 
 </div>
 
-<script>
+
+<script type="module">
+import { createClient } from
+'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+
+const SUPABASE_URL =
+'https://qdxvpngrmatmhuqnjxjy.supabase.co';
+
+const SUPABASE_KEY = 'sb_publishable_5fJ8AofNDxLRRgQOSiz5cQ_OkqlSgmU';
+
+const supabase = createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
+);
 
 document.getElementById("trackForm")
-.addEventListener("submit", function(event) {
+.addEventListener("submit", async function(event) {
 
     event.preventDefault();
 
     const enteredID =
-    document.getElementById("complaintID")
-    .value.trim().toUpperCase();
-
-    const complaints = JSON.parse(
-localStorage.getItem("complaints") || "[]"
-);
-
-console.log("Saved complaints:", complaints);
-
-alert(
-    "IDs found: " +
-    complaints.map(c => c.id).join(", ")
-);
-  const complaint = complaints.find(item =>
-    String(item.id).trim().toUpperCase() === enteredID
-);  
+        document.getElementById("complaintID").value.trim();
 
     const result = document.getElementById("result");
 
     result.style.display = "block";
+    result.textContent = "Searching complaint...";
 
-    if(complaint) {
+    try {
+        const { data: { user }, error: authError } =
+            await supabase.auth.getUser();
+
+        if (authError || !user) {
+            result.textContent = "Please login first.";
+            return;
+        }
+
+        const { data: complaint, error } = await supabase
+            .from("complaints")
+            .select("id, category, village, location, status")
+            .eq("id", enteredID)
+            .maybeSingle();
+
+        if (error) throw error;
+
+        if (!complaint) {
+            result.textContent =
+                "Complaint not found. Please check your reference number.";
+            return;
+        }
 
         result.innerHTML = `
-        <h3>Complaint Details</h3>
-        <b>Reference ID:</b> ${complaint.id}<br>
-        <b>Category:</b> ${complaint.category}<br>
-        <b>Village:</b> ${complaint.village}<br>
-        <b>Location:</b> ${complaint.location}<br>
-        <b>Status:</b>
-<span class="status">${complaint.status || "Pending"}</span>
-<br><br>
-
-<b>Notification:</b>
-<p>
-${
-    complaint.status === "Resolved"
-    ? "Your complaint has been resolved successfully."
-    : complaint.status === "In Progress"
-    ? "Your complaint is currently being processed."
-    : "Your complaint has been received and is waiting for action."
-}
-</p>
+            <h3>Complaint Details</h3>
+            <b>Reference ID:</b> ${complaint.id}<br>
+            <b>Category:</b> ${complaint.category || "Not available"}<br>
+            <b>Village:</b> ${complaint.village || "Not available"}<br>
+            <b>Location:</b> ${complaint.location || "Not available"}<br>
+            <b>Status:</b> ${complaint.status || "Received"}
         `;
 
-    } else {
-
-        result.innerHTML =
-        "Complaint not found. Please check your reference number.";
-
+    } catch (error) {
+        result.textContent = "Error: " + error.message;
     }
-
 });
-
 </script>
+
 
 </div>
 </body>
